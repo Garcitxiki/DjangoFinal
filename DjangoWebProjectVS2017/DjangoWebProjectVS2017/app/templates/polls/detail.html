@@ -1,0 +1,83 @@
+﻿{% extends "app/layout.html" %}
+{% block content %}
+<style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 15px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+<script>
+    function comprobarCorrecta() {
+        $.ajax({ 
+            type: "POST",
+            url: '/comprobar/',
+            data: {
+                'resul': $('input[name="choice"]:checked').val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function (data) {   
+              if (data == "Si"){
+                  $("#respuesta").css("color","green");
+                  $("#respuesta").html('Respuesta Correcta');
+              }else{
+                  $("#respuesta").html('Respuesta Incorrecta');
+                  $("#respuesta").css("color","red");
+              }
+            }
+        });
+    }
+</script>
+
+<h2>{{ title }}</h2>
+<h3>{{ message }}</h3>
+
+<h3>Pregunta: {{ question.question_text }}</h3>
+{% if error_message %}<p><strong style="color:red;"><b>{{ error_message }}</b></strong></p>{% endif %}
+<form action="{% url 'vote' question.id %}" method="post">
+{% csrf_token %}
+{% if request.user.is_authenticated %}
+    {% if not question.choice_set.all  %}
+        <label style="color:red">Sin Opciones Insertadas</label>
+        <a href="{% url 'choice_add' question.id %}"><h3>Insertar Opciones</h3></a> 
+        <a href="{% url 'chart' question.id %}"> <h3>Ver resultado de la votacion</h3> </a><br />
+    {% else %}
+        <table>
+            <tr>
+                <th>Choice</th>
+                <th>Votes</th>
+                <th>Answer</th>
+            </tr>
+            {% for choice2 in question.choice_set.all %}
+                <tr>
+                    <td>{{ choice2.choice_text }}</td>
+                    <td>{{ choice2.votes }}</td>
+                    {% if choice2.correct %}
+                        <td style="color:greenyellow">Correcto</td>
+                    {% else %}
+                        <td style="color:red">Incorrecto</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+        <a href="{% url 'choice_add' question.id %}"><h3>Insertar Opciones</h3></a> 
+        <a href="{% url 'chart' question.id %}"> <h3>Ver resultado de la votacion</h3> </a><br />
+    {% endif %}
+{% else %}
+    {% for choice in question.choice_set.all %}
+        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" onclick="comprobarCorrecta()"/>
+        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+    {% endfor %}
+    <br />
+    <label id="respuesta"></label>
+    <br />
+    <input type="submit" value="Vote" />
+    <br />
+{% endif %}
+
+</form>
+{% endblock %}

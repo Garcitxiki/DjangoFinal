@@ -1,0 +1,41 @@
+﻿{% extends "app/layout.html" %}
+{% block content %}
+
+<style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 15px;
+    }
+</style>
+
+<h2>{{ title }}</h2>
+<h3>{{ message }}</h3>
+
+<h1>{{ question.question_text }}</h1>
+
+<label id="incorrecta" style="color:red; font-size:20px">{{incorrecta}}</label>
+<label id="correcta" style="color:greenyellow; font-size:20px">{{correcta}}</label>
+
+<table>
+    <tr>
+        <th>Choice Text</th>
+        <th>Votes</th>
+    </tr>
+    {% for choice in question.choice_set.all %}
+        <tr>
+            <td>{{ choice.choice_text }}</td>
+            <td>{{ choice.votes }}</td>
+        </tr>
+    {% endfor %}
+</table>
+<br />
+
+
+
+<a href="{% url 'chart' question.id %}"> Ver grafica</a><br />
+<a href="{% url 'index' %}">Contestar otra pregunta?</a>
+
+{% endblock %}

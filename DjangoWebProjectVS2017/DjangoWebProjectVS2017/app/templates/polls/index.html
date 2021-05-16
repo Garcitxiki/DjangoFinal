@@ -1,0 +1,35 @@
+﻿{% extends "app/layout.html" %}
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+
+{% if latest_question_list %}
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <label>Ordenar por categoria:</label>
+        <select name="tema" id="tema">
+            {% for tema in temas %}
+                <option>{{ tema }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" value="Submit">Ordenar</button>
+    </form>
+    <ul>
+    <br/>
+    <label>Tema: </label>
+    {{elegido}}
+    <br/>
+    {% for question in latest_question_list %}
+        <li><a href="{% url 'detail' question.id %}">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+  
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+{% if request.user.is_authenticated %}
+<a href="{% url 'add' %}"><h2>Insertar pregunta</h2></a> 
+{% endif %}
+
+{% endblock %}

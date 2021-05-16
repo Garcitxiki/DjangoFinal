@@ -1,0 +1,21 @@
+﻿{% extends "app/layout.html" %}
+{% block content %}
+
+<h2>{{ title }}</h2>
+{% if messages %}
+<h3>{{ message }}</h3>
+{% endif %}
+
+<h1>Insertar una opción</h1>
+        <form method="POST" class="post-form">{% csrf_token %}
+            {{ form.as_p }}
+            <label>{{enunciado}}</label>
+            <label id="opciones" style="color:peru; font-size:20px">{{opciones}}</label>
+            <br/>
+            <label id="lleno" style="color:red; font-size:25px">{{lleno}}</label>
+            <br />
+            <button type="submit" class="save btn btn-default">Save</button>
+        </form>
+<a href="{% url 'index' %}">Ver preguntas</a> 
+
+{% endblock %}
